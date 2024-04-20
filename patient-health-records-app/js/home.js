@@ -1,71 +1,22 @@
 const client = FHIR.client("https://r4.smarthealthit.org");
-var _searchResultsTable = null;
 
-function searchPatients() {
-    const firstName = document.getElementById("searchFirstName").value.trim();
-    const lastName = document.getElementById("searchLastName").value.trim();
-    const mrn = document.getElementById("searchMRN").value.trim();
-    let queryParts = [];
-
-    if (firstName) {
-        queryParts.push(`given:contains=${firstName}`);
-    }
-    if (lastName) {
-        queryParts.push(`family:contains=${lastName}`);
-    }
-    if (mrn) {
-        queryParts.push(`identifier=http://hospital.smarthealthit.org|${mrn}`);
-    }
-
-    let queryString = queryParts.join('&');
-    if (!queryString) {
-        alert("Please enter at least one search criteria.");
-        return;
-    }
-
-    client.request(`Patient?${queryString}`).then(function(data) {
-        console.log("Search Results:", data);
-        populateSearchResults(data.entry || []);
-    }).catch(function(err) {
-        console.error("Error searching for patients: ", err);
-        alert("Failed to search for patients.");
+FHIR.oauth2.ready()
+    .then(client => {
+        // Now you have the authenticated FHIR client ready to use
+        // You can access the patient ID with `client.patient.id`
+        // and make a FHIR request to get the patient's details
+        return client.request(`Patient/${client.patient.id}`);
+    })
+    .then(patient => {
+        // Here you receive the patient resource
+        console.log('Patient ID:', client.patient.id);
+        // You can now display this patient data in your application
+        fetchPatientDetails(client.patient.id);
+    })
+    .catch(error => {
+        console.error('Failed to retrieve patient data:', error);
+        alert('Error retrieving patient data.');
     });
-}
-
-function populateSearchResults(entries) {
-	const tbody = document.querySelector("#searchResults tbody");
-    tbody.innerHTML = ""; // Clear existing entries
-    entries.forEach(entry => {
-        const patient = entry.resource;
-        const mrnValue = patient.identifier?.find(id => id.system === 'http://hospital.smarthealthit.org')?.value || "N/A";
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${patient.name[0].given.join(' ')}</td>
-            <td>${patient.name[0].family}</td>
-            <td>${mrnValue}</td>
-            <td><button class="btn btn-primary" onclick="selectPatient('${patient.id}')">Select</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-    if (entries.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='4'>No patients found.</td></tr>";
-    }
-	
-	const searchResultsSection = document.getElementById("searchResultsSection");
-	const searchResultsDivider = document.getElementById("searchResultsDivider");
-	const searchResultsTable = document.getElementById('searchResultsTable');
-	if (searchResultsTable) {
-		new simpleDatatables.DataTable(searchResultsTable);
-	}
-	
-	searchResultsDivider.style.display = "block";
-	searchResultsSection.style.display = "block";
-}
-
-function selectPatient(patientId) {
-    console.log("Selected Patient ID:", patientId);
-    fetchPatientDetails(patientId);
-}
 
 function fetchPatientDetails(patientId) {
     client.request(`Patient/${patientId}`).then(patient => {
