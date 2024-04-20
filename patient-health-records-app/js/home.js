@@ -1,4 +1,5 @@
 const client = FHIR.client("https://r4.smarthealthit.org");
+var _searchResultsTable = null;
 
 FHIR.oauth2.ready()
     .then(client => {
