@@ -6,13 +6,13 @@ FHIR.oauth2.ready()
         // Now you have the authenticated FHIR client ready to use
         // You can access the patient ID with `client.patient.id`
         // and make a FHIR request to get the patient's details
-        return client.request(`Patient/${client.patient.id}`);
+	return client.patient.read();
     })
     .then(patient => {
-        // Here you receive the patient resource
-        console.log('Patient ID:', client.patient.id);
+        console.log('Patient ID:', patient.id);
+        displayPatientDetails(patient);
         // You can now display this patient data in your application
-        fetchPatientDetails(client.patient.id);
+        fetchPatientDetails(patient.id);
     })
     .catch(error => {
         console.error('Failed to retrieve patient data:', error);
@@ -20,16 +20,15 @@ FHIR.oauth2.ready()
     });
 
 function fetchPatientDetails(patientId) {
-    client.request(`Patient/${patientId}`).then(patient => {
-        console.log("Patient Details:", patient);
-        displayPatientDetails(patient);
-        
-		fetchEncounters(patientId);
+    //client.request(`Patient/${patientId}`).then(patient => {
+        //console.log("Patient Details:", patient);
+        //displayPatientDetails(patient);
+	fetchEncounters(patientId);
         fetchConditions(patientId);
         fetchObservationsL(patientId, 'laboratory');
         fetchObservationsV(patientId, 'vital-signs');
         fetchMedicationRequests(patientId);
-		fetchBloodPressureData(patientId);
+	fetchBloodPressureData(patientId);
     }).catch(err => {
         console.error("Error fetching patient details:", err);
         alert("Failed to load patient details.");
