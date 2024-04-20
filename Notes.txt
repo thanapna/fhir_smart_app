@@ -1,0 +1,13 @@
+Notes - Patient Health Records App:
+
+patientApiEndpoint = 'https://r4.smarthealthit.org/Patient/'+patientIdUrlParam+'/$everything?_count=500';
+
+App Access EndPoint,
+file:///C:/Users/Suganya/Desktop/PHR/patient-health-records-app/patient.html?patientId=43b6ae50-2cca-4934-ad38-282f8934b770
+
+
+
+Sample PatientIds:
+1. b16cc087-d48a-4292-a78c-aba3e85e516e
+2. 5fd069dc-e337-4062-9722-a732c655c17d
+3. 43b6ae50-2cca-4934-ad38-282f8934b770

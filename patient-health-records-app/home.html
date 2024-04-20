@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Health Records - Home</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="css/styles.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+		<script src="https://www.chartjs.org/dist/2.6.0/Chart.bundle.js"></script>
+		<script src="https://www.chartjs.org/samples/2.6.0/utils.js"></script>
+		<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		</style>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="javascript:void();">Health Records</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <a class="nav-link" href="javascript:void();">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Patient
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+						<div class="container mt-3">
+							<h2>Search Patient</h2>
+							<div class="row">
+							  <div class="col-md-4 mb-3">
+								<label for="firstName" class="form-label">First Name</label>
+								<input type="text" class="form-control" id="searchFirstName" placeholder="Enter First Name">
+							  </div>
+							  <div class="col-md-4 mb-3">
+								<label for="lastName" class="form-label">Last Name</label>
+								<input type="text" class="form-control" id="searchLastName" placeholder="Enter Last Name">
+							  </div>
+							  <div class="col-md-4 mb-3">
+								<label for="mrnNumber" class="form-label">MRN Number</label>
+								<input type="text" class="form-control" id="searchMRN" placeholder="Enter MRN Number">
+							  </div>
+							  <div class="col-12">
+								<button type="submit" id="patientIdSearchBoxButton" class="btn btn-primary" onclick="searchPatients();">Search</button>
+							  </div>
+							</div>
+						</div>
+						
+						<hr id="searchResultsDivider" style="display:none;" class="my-3 border-primary">
+						
+						<div class="row">
+                            <div class="col-xl-6" id="searchResultsSection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Search Results</b>
+									</div>
+									<div id="searchResults" class="card-body">
+										<table id="searchResultsTable">
+											<thead>
+												<tr>
+													<th>First Name</th>
+													<th>Last Name</th>
+													<th>MRN</th>
+													<th>Select</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>First Name</th>
+													<th>Last Name</th>
+													<th>MRN</th>
+													<th>Select</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						
+							 <div class="col-xl-6" id="patientDetailsSection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Patient Details</b>
+									</div>
+									<div id="patientDetails" class="card-body">
+										<table class="table">
+										  <tbody>
+											<tr>
+											  <td><strong>ID:</strong></td>
+											  <td id="patientId"></td>
+											</tr>
+											<tr>
+											  <td><strong>MRN:</strong></td>
+											  <td id="patientMrn"></td>
+											</tr>
+											<tr>
+											  <td><strong>Name:</strong></td>
+											  <td id="patientName"></td>
+											</tr>
+											<tr>
+											  <td><strong>Gender:</strong></td>
+											  <td id="patientGender"></td>
+											</tr>
+											<tr>
+											  <td><strong>Birth Date:</strong></td>
+											  <td id="patientBirthDate"></td>
+											</tr>
+											<tr>
+											  <td><strong>Telephone:</strong></td>
+											  <td id="patientTelephone"></td>
+											</tr>
+											<tr>
+											  <td><strong>Address:</strong></td>
+											  <td id="patientAddress"></td>
+											</tr>
+										  </tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+                            <div class="col-xl-6" id="visitHistorySection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Visit History</b>
+									</div>
+									<div id="visitHistory" class="card-body">
+										<table id="visitHistoryTable">
+											<thead>
+												<tr>
+													<th>Type of Visit</th>
+													<th>Visit Start Date</th>
+													<th>Visit End Date</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>Type of Visit</th>
+													<th>Visit Start Date</th>
+													<th>Visit End Date</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<!-- Visit history data will be inserted here -->
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-xl-6" id="problemListsSection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Problem List</b>
+									</div>
+									<div id="problemLists" class="card-body">
+										<table id="problemListsTable">
+											<thead>
+												<tr>
+													<th>Problem</th>
+													<th>Clinical Status</th>
+													<th>Verification Status</th>
+													<th>Onset Date</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>Problem</th>
+													<th>Clinical Status</th>
+													<th>Verification Status</th>
+													<th>Onset Date</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+                            <div class="col-xl-6" id="labResultsSection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Lab Results</b>
+									</div>
+									<div id="labResults" class="card-body">
+										<table id="labResultsTable">
+											<thead>
+												<tr>
+													<th>Lab Name</th>
+													<th>Value</th>
+													<th>Unit</th>
+													<th>Date</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>Lab Name</th>
+													<th>Value</th>
+													<th>Unit</th>
+													<th>Date</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-xl-6" id="medicationHistorySection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Medication History</b>
+									</div>
+									<div id="medicationHistory" class="card-body">
+										<table id="medicationHistoryTable">
+											<thead>
+												<tr>
+													<th>Medication Name</th>
+													<th>Status</th>
+													<th>Authored Date</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>Medication Name</th>
+													<th>Status</th>
+													<th>Authored Date</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+                            <div class="col-xl-12" id="vitalSignsSection" style="display:none;">
+								<div class="card mb-4">
+									<div class="card-header">
+										<b>Vital Signs</b>
+									</div>
+									<div id="vitalSigns" class="card-body">
+										<table id="vitalSignsTable">
+											<thead>
+												<tr>
+													<th>Vital Sign Name</th>
+													<th>Value</th>
+													<th>Unit</th>
+													<th>Date</th>
+												</tr>
+											</thead>
+											<tfoot>
+												<tr>
+													<th>Vital Sign Name</th>
+													<th>Value</th>
+													<th>Unit</th>
+													<th>Date</th>
+												</tr>
+											</tfoot>
+											<tbody>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-xl-12" id="vitalSignsChartSection" style="display:block;">
+								<div id="bloodPressureChart" style="width:100%; height:400px;"></div>
+							</div>
+						</div>
+									
+									
+									
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>		
+		<script src="js/scripts.js"></script>
+        <script src="js/home.js"></script>
+		<script src="js/home-table.js"></script>
+		
+    </body>
+</html>
