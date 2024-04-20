@@ -6,11 +6,11 @@ FHIR.oauth2.ready()
         // Now you have the authenticated FHIR client ready to use
         // You can access the patient ID with `client.patient.id`
         // and make a FHIR request to get the patient's details
-	return client.patient.read();
+        return client.request(`Patient/${client.patient.id}`);
     })
     .then(patient => {
+        // Here you receive the patient resource
         console.log('Patient ID:', patient.id);
-        displayPatientDetails(patient);
         // You can now display this patient data in your application
         fetchPatientDetails(patient.id);
     })
@@ -20,9 +20,9 @@ FHIR.oauth2.ready()
     });
 
 function fetchPatientDetails(patientId) {
-    //client.request(`Patient/${patientId}`).then(patient => {
-        //console.log("Patient Details:", patient);
-        //displayPatientDetails(patient);
+    client.request(`Patient/${patientId}`).then(patient => {
+        console.log("Patient Details:", patient);
+        displayPatientDetails(patient);
 	fetchEncounters(patientId);
         fetchConditions(patientId);
         fetchObservationsL(patientId, 'laboratory');
