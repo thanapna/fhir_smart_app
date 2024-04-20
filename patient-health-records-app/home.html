@@ -46,69 +46,9 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-						<div class="container mt-3">
-							<h2>Search Patient</h2>
+						<div class="container mt-3" id="patientDetailsSection" style="display:none;">
 							<div class="row">
-							  <div class="col-md-4 mb-3">
-								<label for="firstName" class="form-label">First Name</label>
-								<input type="text" class="form-control" id="searchFirstName" placeholder="Enter First Name">
-							  </div>
-							  <div class="col-md-4 mb-3">
-								<label for="lastName" class="form-label">Last Name</label>
-								<input type="text" class="form-control" id="searchLastName" placeholder="Enter Last Name">
-							  </div>
-							  <div class="col-md-4 mb-3">
-								<label for="mrnNumber" class="form-label">MRN Number</label>
-								<input type="text" class="form-control" id="searchMRN" placeholder="Enter MRN Number">
-							  </div>
-							  <div class="col-12">
-								<button type="submit" id="patientIdSearchBoxButton" class="btn btn-primary" onclick="searchPatients();">Search</button>
-							  </div>
-							</div>
-						</div>
-						
-						<hr id="searchResultsDivider" style="display:none;" class="my-3 border-primary">
-						
-						<div class="row">
-                            <div class="col-xl-6" id="searchResultsSection" style="display:none;">
-								<div class="card mb-4">
-									<div class="card-header">
-										<b>Search Results</b>
-									</div>
-									<div id="searchResults" class="card-body">
-										<table id="searchResultsTable">
-											<thead>
-												<tr>
-													<th>First Name</th>
-													<th>Last Name</th>
-													<th>MRN</th>
-													<th>Select</th>
-												</tr>
-											</thead>
-											<tfoot>
-												<tr>
-													<th>First Name</th>
-													<th>Last Name</th>
-													<th>MRN</th>
-													<th>Select</th>
-												</tr>
-											</tfoot>
-											<tbody>
-												<tr>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td></td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						
-							 <div class="col-xl-6" id="patientDetailsSection" style="display:none;">
-								<div class="card mb-4">
-									<div class="card-header">
+							  <div class="card-header">
 										<b>Patient Details</b>
 									</div>
 									<div id="patientDetails" class="card-body">
@@ -145,10 +85,11 @@
 										  </tbody>
 										</table>
 									</div>
-								</div>
 							</div>
 						</div>
-
+						
+						<hr id="searchResultsDivider" style="display:none;" class="my-3 border-primary">
+						
 						<div class="row">
                             <div class="col-xl-6" id="visitHistorySection" style="display:none;">
 								<div class="card mb-4">
